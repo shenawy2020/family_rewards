@@ -23,23 +23,33 @@ public class UserService : IUserService
         var admin = await _uow.Users.GetByIdAsync(adminId)
             ?? throw new KeyNotFoundException("Admin not found.");
 
-        var existing = await _uow.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-        if (existing != null)
-            throw new InvalidOperationException("Email already in use.");
+        // Get family code
+        var family = await _uow.Families.GetByIdAsync(admin.FamilyId)
+            ?? throw new KeyNotFoundException("Family not found.");
+
+        // Calculate next child sequence
+        var maxSeq = await _context.Users
+            .Where(u => u.FamilyId == admin.FamilyId && u.ChildSequence != null)
+            .MaxAsync(u => (int?)u.ChildSequence) ?? 0;
+        var nextSeq = maxSeq + 1;
+
+        // Generate login code: fam0000001-01
+        var loginCode = $"{family.Code}-{nextSeq:D2}";
 
         var child = new User
         {
             FullName = dto.FullName,
-            Email = dto.Email,
+            Email = loginCode, // Login code stored in Email field
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = UserRole.Child,
+            Role = dto.IsAdmin ? UserRole.Admin : UserRole.Child,
             FamilyId = admin.FamilyId,
-            AvatarUrl = dto.AvatarUrl
+            AvatarUrl = dto.AvatarUrl,
+            ChildSequence = nextSeq
         };
         await _uow.Users.AddAsync(child);
         await _uow.SaveChangesAsync();
 
-        // Create wallet for child
+        // Create wallet
         var wallet = new Wallet { ChildId = child.Id, Balance = 0 };
         await _uow.Wallets.AddAsync(wallet);
         await _uow.SaveChangesAsync();
@@ -47,11 +57,60 @@ public class UserService : IUserService
         return MapToDto(child, 0);
     }
 
+    public async Task<UserDto> UpdateChildAsync(int childId, UpdateChildDto dto, int adminId)
+    {
+        var admin = await _uow.Users.GetByIdAsync(adminId)
+            ?? throw new KeyNotFoundException("Admin not found.");
+
+        var child = await _context.Users
+            .Include(u => u.Wallet)
+            .FirstOrDefaultAsync(u => u.Id == childId && u.FamilyId == admin.FamilyId && u.ChildSequence != null)
+            ?? throw new KeyNotFoundException("User not found.");
+
+        if (!string.IsNullOrWhiteSpace(dto.FullName)) 
+            child.FullName = dto.FullName;
+        if (dto.AvatarUrl != null) 
+            child.AvatarUrl = dto.AvatarUrl;
+
+        _uow.Users.Update(child);
+        await _uow.SaveChangesAsync();
+
+        return MapToDto(child, child.Wallet?.Balance ?? 0);
+    }
+
+    public async Task ResetChildPasswordAsync(int childId, ResetPasswordDto dto, int adminId)
+    {
+        var admin = await _uow.Users.GetByIdAsync(adminId)
+            ?? throw new KeyNotFoundException("Admin not found.");
+
+        var child = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == childId && u.FamilyId == admin.FamilyId && u.ChildSequence != null)
+            ?? throw new KeyNotFoundException("User not found.");
+
+        child.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        _uow.Users.Update(child);
+        await _uow.SaveChangesAsync();
+    }
+
+    public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    {
+        var user = await _uow.Users.GetByIdAsync(userId)
+            ?? throw new KeyNotFoundException("User not found.");
+
+        if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+            throw new InvalidOperationException("Current password is incorrect.");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        _uow.Users.Update(user);
+        await _uow.SaveChangesAsync();
+    }
+
     public async Task<IEnumerable<UserDto>> GetChildrenAsync(int familyId)
     {
         var children = await _context.Users
-            .Where(u => u.FamilyId == familyId && u.Role == UserRole.Child)
+            .Where(u => u.FamilyId == familyId && u.ChildSequence != null)
             .Include(u => u.Wallet)
+            .OrderBy(u => u.ChildSequence)
             .ToListAsync();
 
         return children.Select(c => MapToDto(c, c.Wallet?.Balance ?? 0));
@@ -76,6 +135,8 @@ public class UserService : IUserService
         Role = u.Role.ToString(),
         AvatarUrl = u.AvatarUrl,
         FamilyId = u.FamilyId,
-        StarBalance = balance
+        StarBalance = balance,
+        LoginCode = u.ChildSequence != null ? u.Email : null,
+        ChildSequence = u.ChildSequence
     };
 }

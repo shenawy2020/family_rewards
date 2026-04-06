@@ -16,98 +16,161 @@ import { AuthService } from './core/services/auth.service';
   template: `
     <div class="app-shell">
       @if (auth.isLoggedIn) {
-        <mat-toolbar class="app-toolbar">
-          <div class="toolbar-left">
-            <mat-icon class="logo-icon">star</mat-icon>
-            <span class="app-title">Family Rewards</span>
-          </div>
-          <div class="toolbar-nav">
-            @if (auth.isAdmin) {
-              <a mat-button routerLink="/admin/dashboard" routerLinkActive="active-link">
-                <mat-icon>dashboard</mat-icon> Dashboard
-              </a>
-              <a mat-button routerLink="/admin/children" routerLinkActive="active-link">
-                <mat-icon>group</mat-icon> Children
-              </a>
-              <a mat-button routerLink="/admin/tasks" routerLinkActive="active-link">
-                <mat-icon>assignment</mat-icon> Tasks
-              </a>
-              <a mat-button routerLink="/admin/rewards" routerLinkActive="active-link">
-                <mat-icon>card_giftcard</mat-icon> Rewards
-              </a>
-              <a mat-button routerLink="/admin/penalties" routerLinkActive="active-link">
-                <mat-icon>warning</mat-icon> Penalties
-              </a>
-            } @else {
-              <a mat-button routerLink="/child/dashboard" routerLinkActive="active-link">
-                <mat-icon>home</mat-icon> Home
-              </a>
-              <a mat-button routerLink="/child/tasks" routerLinkActive="active-link">
-                <mat-icon>checklist</mat-icon> My Tasks
-              </a>
-              <a mat-button routerLink="/child/rewards" routerLinkActive="active-link">
-                <mat-icon>store</mat-icon> Rewards
-              </a>
-              <a mat-button routerLink="/child/wallet" routerLinkActive="active-link">
-                <mat-icon>account_balance_wallet</mat-icon> Wallet
-              </a>
-            }
-            <a mat-button routerLink="/leaderboard" routerLinkActive="active-link">
-              <mat-icon>emoji_events</mat-icon> Leaderboard
+        <nav class="app-nav">
+          <div class="nav-inner">
+            <a routerLink="/" class="nav-brand">
+              <span class="brand-star">⭐</span>
+              <span class="brand-text">Family Rewards</span>
             </a>
-          </div>
-          <div class="toolbar-right">
-            <button mat-icon-button [matMenuTriggerFor]="menu">
-              <img [src]="auth.currentUser?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + auth.currentUser?.fullName"
-                   class="avatar-img" [alt]="auth.currentUser?.fullName || 'User'">
-            </button>
-            <mat-menu #menu="matMenu">
-              <div class="menu-header">
-                <strong>{{ auth.currentUser?.fullName }}</strong>
-                <span class="role-badge" [class.admin]="auth.isAdmin">{{ auth.currentUser?.role }}</span>
-              </div>
-              <mat-divider></mat-divider>
-              <button mat-menu-item (click)="auth.logout()">
-                <mat-icon>logout</mat-icon> Logout
+            <div class="nav-links">
+              @if (auth.isAdmin) {
+                <a routerLink="/admin/dashboard" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">📊</span> Dashboard
+                </a>
+                <a routerLink="/admin/children" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">👨‍👩‍👧‍👦</span> Children
+                </a>
+                <a routerLink="/admin/tasks" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">✅</span> Tasks
+                </a>
+                <a routerLink="/admin/stars" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">🌟</span> Stars
+                </a>
+                <a routerLink="/admin/rewards" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">🎁</span> Rewards
+                </a>
+                <a routerLink="/admin/penalties" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">⚠️</span> Penalties
+                </a>
+              } @else {
+                <a routerLink="/child/dashboard" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">🏠</span> Home
+                </a>
+                <a routerLink="/child/tasks" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">📋</span> My Tasks
+                </a>
+                <a routerLink="/child/rewards" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">🏪</span> Store
+                </a>
+                <a routerLink="/child/wallet" routerLinkActive="active-link" class="nav-link">
+                  <span class="link-icon">💰</span> Wallet
+                </a>
+              }
+              <a routerLink="/leaderboard" routerLinkActive="active-link" class="nav-link">
+                <span class="link-icon">🏆</span> Ranks
+              </a>
+            </div>
+            <div class="nav-user">
+              <button class="user-btn" [matMenuTriggerFor]="menu">
+                <img [src]="auth.currentUser?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + auth.currentUser?.fullName"
+                     class="user-avatar" [alt]="auth.currentUser?.fullName || 'User'">
+                <span class="user-name">{{ auth.currentUser?.fullName }}</span>
+                <mat-icon class="dropdown-arrow">expand_more</mat-icon>
               </button>
-            </mat-menu>
+              <mat-menu #menu="matMenu">
+                <div class="menu-header">
+                  <span class="menu-name">{{ auth.currentUser?.fullName }}</span>
+                  <span class="menu-role" [class.admin]="auth.isAdmin">{{ auth.isAdmin ? '👑 Admin' : '⭐ Child' }}</span>
+                </div>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="auth.logout()">
+                  <mat-icon>logout</mat-icon> Logout
+                </button>
+              </mat-menu>
+            </div>
           </div>
-        </mat-toolbar>
+        </nav>
       }
-      <main class="app-content">
+      <main class="app-content" [class.with-nav]="auth.isLoggedIn">
         <router-outlet></router-outlet>
       </main>
     </div>
   `,
   styles: [`
-    .app-shell { min-height: 100vh; background: var(--bg-primary); }
-    .app-toolbar {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-      color: white;
+    .app-shell { min-height: 100vh; background: var(--bg-primary); position: relative; }
+
+    .app-nav {
+      background: linear-gradient(135deg, #4dc9d6 0%, #45b7d1 40%, #42a5f5 100%);
       padding: 0 24px;
-      height: 64px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 20px rgba(77,201,214,0.3);
+    }
+    .nav-inner {
       display: flex;
       align-items: center;
       gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 64px;
     }
-    .toolbar-left { display: flex; align-items: center; gap: 8px; }
-    .logo-icon { color: #ffd700; font-size: 28px; width: 28px; height: 28px; }
-    .app-title { font-size: 1.3rem; font-weight: 700; background: linear-gradient(to right, #ffd700, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .toolbar-nav { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
-    .toolbar-nav a { color: rgba(255,255,255,0.8); border-radius: 8px; transition: all 0.2s; font-size: 0.85rem; }
-    .toolbar-nav a:hover, .toolbar-nav a.active-link { color: white; background: rgba(255,255,255,0.15); }
-    .toolbar-right { margin-left: auto; }
-    .avatar-img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,215,0,0.6); }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .brand-star { font-size: 1.6rem; animation: float 3s infinite ease-in-out; }
+    .brand-text { font-size: 1.3rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: center;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(255,255,255,0.2); color: white; }
+    .nav-link.active-link { background: rgba(255,255,255,0.3); color: white; font-weight: 600; }
+    .link-icon { font-size: 1rem; }
+
+    .nav-user { margin-left: auto; flex-shrink: 0; }
+    .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 24px;
+      padding: 4px 12px 4px 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: white;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.9rem;
+    }
+    .user-btn:hover { background: rgba(255,255,255,0.3); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.6); }
+    .user-name { font-weight: 500; }
+    .dropdown-arrow { font-size: 18px; width: 18px; height: 18px; }
+
     .menu-header { padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; }
-    .role-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; background: rgba(103,58,183,0.2); color: #9c27b0; width: fit-content; }
-    .role-badge.admin { background: rgba(255,215,0,0.2); color: #f57f17; }
-    .app-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .menu-name { font-weight: 600; font-size: 1rem; }
+    .menu-role { font-size: 0.8rem; color: var(--text-secondary); }
+
+    .app-content { padding: 24px; max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
     @media(max-width: 768px) {
-      .toolbar-nav { display: none; }
+      .nav-links { display: none; }
+      .user-name { display: none; }
       .app-content { padding: 16px; }
     }
   `]

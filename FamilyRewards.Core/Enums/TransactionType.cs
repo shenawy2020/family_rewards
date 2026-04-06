@@ -4,5 +4,8 @@ public enum TransactionType
 {
     Reward = 1,
     Penalty = 2,
-    Redeem = 3
+    Redeem = 3,
+    Gift = 4,
+    ManualAdd = 5,
+    ManualDeduct = 6
 }

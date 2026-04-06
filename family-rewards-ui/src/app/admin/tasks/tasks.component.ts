@@ -55,14 +55,25 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
                       <mat-option [value]="3">✨ Custom</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <mat-form-field appearance="outline" class="full-width">
+                  <mat-form-field appearance="outline">
                     <mat-label>Description</mat-label>
                     <textarea matInput formControlName="description" rows="2" placeholder="Task details..."></textarea>
                   </mat-form-field>
+                  <div class="icon-picker full-width">
+                    <p>Select Icon:</p>
+                    <div class="emoji-list">
+                      <button type="button" class="emoji-btn" 
+                              *ngFor="let emoji of availableIcons" 
+                              [class.selected]="taskForm.get('icon')?.value === emoji"
+                              (click)="taskForm.patchValue({icon: emoji})">
+                        {{ emoji }}
+                      </button>
+                    </div>
+                  </div>
                   <div class="form-actions">
                     <button mat-raised-button class="btn-primary" type="submit" [disabled]="submitting || taskForm.invalid">
                       @if (submitting) { <mat-spinner diameter="20"></mat-spinner> }
-                      @else { <mat-icon>add_task</mat-icon> Create Task }
+                      @else { <span><mat-icon>add_task</mat-icon> Create Task</span> }
                     </button>
                   </div>
                 </form>
@@ -77,9 +88,18 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
                     <span class="badge" [class]="'badge-' + task.type.toLowerCase()">{{ task.type }}</span>
                     <div class="stars-display"><mat-icon>star</mat-icon> {{ task.stars }}</div>
                   </div>
-                  <h3 class="task-title">{{ task.title }}</h3>
+                  <h3 class="task-title">
+                    <span class="task-icon" *ngIf="task.icon">{{ task.icon }}</span> 
+                    {{ task.title }}
+                  </h3>
                   <p class="task-desc">{{ task.description }}</p>
                   <p class="task-meta">By {{ task.createdByName }}</p>
+                  
+                  <div class="card-actions">
+                     <button mat-icon-button color="warn" (click)="deleteTask(task.id)">
+                        <mat-icon>delete</mat-icon>
+                     </button>
+                  </div>
                 </mat-card>
               }
             </div>
@@ -135,24 +155,32 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
     .form-grid-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0 16px; }
     .full-width { grid-column: 1/-1; }
     .form-actions { grid-column: 1/-1; display: flex; justify-content: flex-end; }
-    .sub-heading { font-size: 1rem; font-weight: 700; color: #94a3b8; margin: 24px 0 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .sub-heading { font-size: 1rem; font-weight: 700; color: #636e72; margin: 24px 0 16px; text-transform: uppercase; letter-spacing: 1px; }
     .task-card { padding: 20px !important; transition: all 0.3s; }
-    .task-card:hover { transform: translateY(-4px); border-color: #7c3aed !important; }
+    .task-card:hover { transform: translateY(-4px); border-color: #4dc9d6 !important; box-shadow: 0 8px 24px rgba(77,201,214,0.15) !important; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .task-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
-    .task-desc { color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px; }
-    .task-meta { color: #64748b; font-size: 0.75rem; }
+    .task-desc { color: #636e72; font-size: 0.85rem; margin-bottom: 8px; }
+    .task-meta { color: #b2bec3; font-size: 0.75rem; }
     .completions-list { display: flex; flex-direction: column; gap: 16px; }
     .completion-card { display: flex; align-items: center; justify-content: space-between; padding: 20px !important; flex-wrap: wrap; gap: 16px; }
     .comp-left { display: flex; align-items: center; gap: 16px; }
-    .comp-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #7c3aed; }
-    .comp-task { color: #94a3b8; font-size: 0.9rem; margin: 2px 0; }
-    .comp-meta { color: #64748b; font-size: 0.8rem; }
-    .comp-notes { color: #f59e0b; font-size: 0.85rem; margin-top: 4px; }
+    .comp-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #4dc9d6; background: white; }
+    .comp-task { color: #636e72; font-size: 0.9rem; margin: 2px 0; }
+    .comp-meta { color: #b2bec3; font-size: 0.8rem; }
+    .comp-notes { color: #f57f17; font-size: 0.85rem; margin-top: 4px; }
     .comp-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
     .comp-actions { display: flex; gap: 8px; }
-    .btn-approve { background: rgba(16,185,129,0.2) !important; color: #10b981 !important; border-radius: 10px !important; }
-    .btn-reject { background: rgba(239,68,68,0.2) !important; color: #ef4444 !important; border-radius: 10px !important; }
+    .btn-approve { background: #e8f5e9 !important; color: #2e7d32 !important; border-radius: 12px !important; font-family: 'Fredoka', sans-serif !important; font-weight: 600 !important; }
+    .btn-reject { background: #ffebee !important; color: #c62828 !important; border-radius: 12px !important; font-family: 'Fredoka', sans-serif !important; font-weight: 600 !important; }
+    .icon-picker { margin-bottom: 16px; }
+    .icon-picker p { margin: 0 0 8px; font-weight: 600; color: #636e72; font-size: 0.9rem; }
+    .emoji-list { display: flex; gap: 8px; flex-wrap: wrap; }
+    .emoji-btn { font-size: 1.5rem; background: transparent; border: 2px solid transparent; border-radius: 50%; cursor: pointer; transition: all 0.2s; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+    .emoji-btn:hover { background: #f1f2f6; }
+    .emoji-btn.selected { border-color: #4dc9d6; background: #e0f7fa; }
+    .task-icon { display: inline-block; margin-right: 6px; font-size: 1.2em; }
+    .card-actions { position: absolute; right: 8px; bottom: 8px; }
   `]
 })
 export class TasksComponent implements OnInit {
@@ -164,11 +192,17 @@ export class TasksComponent implements OnInit {
   pending: TaskCompletion[] = [];
   submitting = false;
   processingId: number | null = null;
+  availableIcons = [
+    '🧹', '🛏️', '📚', '🐶', '🗑️', '🌱', '👕', '🍽️', '🏋️', '🧘‍♂️', '🎨', '🎯',
+    '🧺', '🧼', '🚗', '🪴', '🛒', '📝', '🏃', '🚿', '🧸', '🪟', '🧽', '🍼'
+  ];
+  
   taskForm = this.fb.group({
     title: ['', Validators.required],
     description: ['', Validators.required],
     stars: [10, [Validators.required, Validators.min(1)]],
-    type: [1, Validators.required]
+    type: [1, Validators.required],
+    icon: ['🧹']
   });
 
   constructor() {}
@@ -183,9 +217,21 @@ export class TasksComponent implements OnInit {
     if (this.taskForm.invalid) return;
     this.submitting = true;
     this.taskSvc.createTask(this.taskForm.value as any).subscribe({
-      next: () => { this.snack.open('Task created! ✅', 'Close', { duration: 3000 }); this.taskForm.reset({ stars: 10, type: 1 }); this.submitting = false; this.load(); },
+      next: () => { this.snack.open('Task created! ✅', 'Close', { duration: 3000 }); this.taskForm.reset({ stars: 10, type: 1, icon: '🧹' }); this.submitting = false; this.load(); },
       error: (e) => { this.snack.open(e.error?.message || 'Error', 'Close', { duration: 4000 }); this.submitting = false; }
     });
+  }
+
+  deleteTask(id: number) {
+    if (confirm('Are you sure you want to delete this task?')) {
+      this.taskSvc.deleteTask(id).subscribe({
+        next: () => {
+          this.snack.open('Task deleted.', 'Close', { duration: 3000 });
+          this.load();
+        },
+        error: () => this.snack.open('Failed to delete task', 'Close', { duration: 3000 })
+      });
+    }
   }
 
   approve(id: number, status: number) {

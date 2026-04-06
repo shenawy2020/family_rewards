@@ -30,6 +30,15 @@ public class TasksController : ControllerBase
         return Ok(await _taskService.GetTasksAsync(familyId));
     }
 
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteTask(int id)
+    {
+        var adminId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        await _taskService.DeleteTaskAsync(id, adminId);
+        return Ok(new { message = "Task deleted" });
+    }
+
     [HttpGet("pending")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetPendingCompletions()

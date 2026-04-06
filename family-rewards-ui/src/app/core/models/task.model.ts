@@ -7,6 +7,7 @@ export interface FamilyTask {
   createdBy: number;
   createdByName: string;
   createdAt: string;
+  icon?: string;
 }
 
 export interface CreateTaskDto {
@@ -14,6 +15,7 @@ export interface CreateTaskDto {
   description: string;
   stars: number;
   type: number; // 1=Daily, 2=Weekly, 3=Custom
+  icon?: string;
 }
 
 export interface TaskCompletion {

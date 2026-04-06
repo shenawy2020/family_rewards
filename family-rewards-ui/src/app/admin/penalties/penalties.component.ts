@@ -95,10 +95,10 @@ import { User } from '../../core/models/user.model';
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
     .full-width { grid-column: 1/-1; }
     .form-actions { grid-column: 1/-1; display: flex; justify-content: flex-end; }
-    .sub-heading { font-size: 1rem; font-weight: 700; color: #94a3b8; margin: 24px 0 16px; text-transform: uppercase; letter-spacing: 1px; }
-    .btn-danger { background: rgba(239,68,68,0.2) !important; color: #ef4444 !important; border-radius: 12px !important; }
+    .sub-heading { font-size: 1rem; font-weight: 700; color: #636e72; margin: 24px 0 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .btn-danger { background: linear-gradient(135deg, #ef5350, #e57373) !important; color: white !important; border-radius: 14px !important; font-family: 'Fredoka', sans-serif !important; font-weight: 600 !important; }
     .full-table { width: 100%; }
-    .text-red { color: #ef4444; font-weight: 700; }
+    .text-red { color: #c62828; font-weight: 700; }
   `]
 })
 export class PenaltiesComponent implements OnInit {

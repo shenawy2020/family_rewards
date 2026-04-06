@@ -22,6 +22,8 @@ export class WalletService {
   getWallet(childId: number): Observable<Wallet> { return this.http.get<Wallet>(`${this.API}/${childId}`); }
   getMyWallet(): Observable<Wallet> { return this.http.get<Wallet>(`${this.API}/my-wallet`); }
   getTransactions(childId: number): Observable<Transaction[]> { return this.http.get<Transaction[]>(`${this.API}/transactions/${childId}`); }
+  addStars(dto: any): Observable<Wallet> { return this.http.post<Wallet>(`${this.API}/add-stars`, dto); }
+  deliverGift(dto: any): Observable<Wallet> { return this.http.post<Wallet>(`${this.API}/deliver-gift`, dto); }
 }
 
 @Injectable({ providedIn: 'root' })

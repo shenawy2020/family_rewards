@@ -27,7 +27,8 @@ public class TaskService : ITaskService
             Stars = dto.Stars,
             Type = dto.Type,
             CreatedBy = adminId,
-            FamilyId = familyId
+            FamilyId = familyId,
+            Icon = dto.Icon
         };
         await _uow.Tasks.AddAsync(task);
         await _uow.SaveChangesAsync();
@@ -47,16 +48,53 @@ public class TaskService : ITaskService
         return tasks.Select(t => MapToTaskDto(t, t.Creator.FullName));
     }
 
+    public async Task DeleteTaskAsync(int taskId, int adminId)
+    {
+        var task = await _uow.Tasks.GetByIdAsync(taskId);
+        if (task == null) return;
+
+        var admin = await _uow.Users.GetByIdAsync(adminId);
+        if (admin == null || admin.FamilyId != task.FamilyId) 
+            throw new UnauthorizedAccessException("Not authorized to delete this task.");
+
+        _uow.Tasks.Remove(task);
+        await _uow.SaveChangesAsync();
+    }
+
     public async Task<TaskCompletionDto> CompleteTaskAsync(CompleteTaskDto dto, int childId)
     {
         var task = await _uow.Tasks.GetByIdAsync(dto.TaskId)
             ?? throw new KeyNotFoundException("Task not found.");
 
-        // Check no pending submission exists
-        var existing = await _uow.TaskCompletions.FirstOrDefaultAsync(
-            tc => tc.TaskId == dto.TaskId && tc.ChildId == childId && tc.Status == TaskCompletionStatus.Pending);
-        if (existing != null)
-            throw new InvalidOperationException("A pending submission already exists for this task.");
+        // Validation logic based on TaskType
+        if (task.Type == TaskType.Daily)
+        {
+            var todayStart = DateTime.UtcNow.Date;
+            var completedToday = await _context.TaskCompletions.AnyAsync(
+                tc => tc.TaskId == dto.TaskId && tc.ChildId == childId && 
+                tc.CompletedAt >= todayStart && 
+                tc.Status != TaskCompletionStatus.Rejected);
+            if (completedToday)
+                throw new InvalidOperationException("You have already completed this daily task today.");
+        }
+        else if (task.Type == TaskType.Weekly)
+        {
+            var startOfWeek = DateTime.UtcNow.Date.AddDays(-7);
+            var completedThisWeek = await _context.TaskCompletions.AnyAsync(
+                tc => tc.TaskId == dto.TaskId && tc.ChildId == childId && 
+                tc.CompletedAt >= startOfWeek && 
+                tc.Status != TaskCompletionStatus.Rejected);
+            if (completedThisWeek)
+                throw new InvalidOperationException("You have already completed this weekly task this week.");
+        }
+        else if (task.Type == TaskType.Custom)
+        {
+            var pendingCustom = await _context.TaskCompletions.AnyAsync(
+                tc => tc.TaskId == dto.TaskId && tc.ChildId == childId && 
+                tc.Status == TaskCompletionStatus.Pending);
+            if (pendingCustom)
+                throw new InvalidOperationException("A pending submission already exists for this custom task.");
+        }
 
         var completion = new TaskCompletion
         {
@@ -147,7 +185,8 @@ public class TaskService : ITaskService
         Type = t.Type.ToString(),
         CreatedBy = t.CreatedBy,
         CreatedByName = creatorName,
-        CreatedAt = t.CreatedAt
+        CreatedAt = t.CreatedAt,
+        Icon = t.Icon
     };
 
     private static TaskCompletionDto MapToCompletionDto(TaskCompletion tc, FamilyTask task, User child) => new()

@@ -1,5 +1,3 @@
-using FamilyRewards.Core.Enums;
-
 namespace FamilyRewards.Core.DTOs.Wallet;
 
 public class TransactionDto

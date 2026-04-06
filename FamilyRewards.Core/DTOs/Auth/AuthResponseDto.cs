@@ -8,5 +8,7 @@ public class AuthResponseDto
     public string Role { get; set; } = string.Empty;
     public int UserId { get; set; }
     public int FamilyId { get; set; }
+    public string FamilyCode { get; set; } = string.Empty;
+    public string? LoginCode { get; set; }
     public string? AvatarUrl { get; set; }
 }
