@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService } from '../core/services/user.service';
 import { User } from '../core/models/user.model';
+import { I18nService } from '../core/services/i18n.service';
 
 @Component({
   selector: 'app-leaderboard',
@@ -14,8 +15,8 @@ import { User } from '../core/models/user.model';
     <div class="animate-in">
       <div class="page-header">
         <div>
-          <h1 class="page-title">🏆 Leaderboard</h1>
-          <p class="page-subtitle">Who's the star of the family?</p>
+          <h1 class="page-title">🏆 {{ i18n.t('leaderboard.title') }}</h1>
+          <p class="page-subtitle">{{ i18n.t('leaderboard.subtitle') }}</p>
         </div>
       </div>
 
@@ -47,8 +48,8 @@ import { User } from '../core/models/user.model';
           @if (children.length === 0) {
             <div class="empty-state">
               <span style="font-size:4rem">🏆</span>
-              <h3>No children yet</h3>
-              <p>Add children to see the leaderboard!</p>
+              <h3>{{ i18n.t('leaderboard.noChildren') }}</h3>
+              <p>{{ i18n.t('leaderboard.addToSee') }}</p>
             </div>
           }
         </div>
@@ -88,11 +89,14 @@ import { User } from '../core/models/user.model';
     .lb-score { display: flex; align-items: center; gap: 6px; }
     .score-star { font-size: 1.3rem; }
     .score-num { font-size: 1.4rem; font-weight: 700; color: #f57f17; }
+    
+    [dir="rtl"] .lb-card:hover { transform: translateX(-4px); }
   `]
 })
 export class LeaderboardComponent implements OnInit {
   children: User[] = [];
   loading = true;
+  public i18n = inject(I18nService);
 
   constructor(private userSvc: UserService) {}
 
@@ -105,6 +109,6 @@ export class LeaderboardComponent implements OnInit {
     if (url?.startsWith('/uploads')) {
       return `http://localhost:5000${url}`;
     }
-    return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + child.fullName;
+    return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(child.fullName);
   }
 }

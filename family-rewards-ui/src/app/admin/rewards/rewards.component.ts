@@ -14,6 +14,7 @@ import { RewardService, WalletService } from '../../core/services/reward-wallet-
 import { UserService } from '../../core/services/user.service';
 import { Reward } from '../../core/models/reward.model';
 import { User } from '../../core/models/user.model';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-rewards',
@@ -24,38 +25,38 @@ import { User } from '../../core/models/user.model';
     <div class="animate-in">
       <div class="page-header">
         <div>
-          <h1 class="page-title">🎁 Rewards Management</h1>
-          <p class="page-subtitle">Create exciting rewards for your children</p>
+          <h1 class="page-title">🎁 {{ i18n.t('rewards.title') }}</h1>
+          <p class="page-subtitle">{{ i18n.t('rewards.subtitle') }}</p>
         </div>
         <button mat-raised-button class="btn-primary" (click)="showForm = !showForm">
           <mat-icon>{{ showForm ? 'close' : 'add' }}</mat-icon>
-          {{ showForm ? 'Cancel' : 'New Reward' }}
+          {{ showForm ? i18n.t('common.cancel') : i18n.t('rewards.createReward') }}
         </button>
       </div>
 
       @if (showForm) {
         <mat-card class="add-form-card animate-in">
-          <mat-card-header><mat-card-title>🎀 Create Reward</mat-card-title></mat-card-header>
+          <mat-card-header><mat-card-title>🎀 {{ i18n.t('rewards.defineReward') }}</mat-card-title></mat-card-header>
           <mat-card-content>
             <form [formGroup]="form" (ngSubmit)="createReward()" class="form-grid">
               <mat-form-field appearance="outline">
-                <mat-label>Reward Title</mat-label>
+                <mat-label>{{ i18n.t('rewards.rewardTitle') }}</mat-label>
                 <mat-icon matPrefix>card_giftcard</mat-icon>
-                <input matInput formControlName="title" placeholder="Extra Screen Time">
+                <input matInput formControlName="title">
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Stars Cost</mat-label>
+                <mat-label>{{ i18n.t('rewards.starsCost') }}</mat-label>
                 <mat-icon matPrefix>star</mat-icon>
                 <input matInput type="number" formControlName="starsCost" min="1">
               </mat-form-field>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Description</mat-label>
+                <mat-label>{{ i18n.t('tasks.description') }}</mat-label>
                 <textarea matInput formControlName="description" rows="2"></textarea>
               </mat-form-field>
               <div class="form-actions">
                 <button mat-raised-button class="btn-gold" type="submit" [disabled]="submitting || form.invalid">
                   @if (submitting) { <mat-spinner diameter="20"></mat-spinner> }
-                  @else { <mat-icon>save</mat-icon> Save Reward }
+                  @else { <mat-icon>save</mat-icon> {{ i18n.t('common.save') }} }
                 </button>
               </div>
             </form>
@@ -64,11 +65,11 @@ import { User } from '../../core/models/user.model';
       }
 
       <mat-card class="assign-form-card animate-in" style="margin-bottom: 24px; border: 2px solid rgba(77,201,214,0.3) !important;">
-        <mat-card-header><mat-card-title>🌟 Give Bonus Reward</mat-card-title></mat-card-header>
+        <mat-card-header><mat-card-title>🌟 {{ i18n.t('rewards.bonusReward') }}</mat-card-title></mat-card-header>
         <mat-card-content>
           <form [formGroup]="assignForm" (ngSubmit)="giveBonusReward()" class="form-grid">
             <div class="child-cards-selector">
-              <p>Select Child:</p>
+              <p>{{ i18n.t('common.selectChild') }}:</p>
               <div class="child-cards-grid">
                 @for (c of children; track c.id) {
                   <div class="child-select-card" 
@@ -82,7 +83,7 @@ import { User } from '../../core/models/user.model';
               </div>
             </div>
             <mat-form-field appearance="outline">
-              <mat-label>Select Reward</mat-label>
+              <mat-label>{{ i18n.t('rewards.giveReward') }}</mat-label>
               <mat-select formControlName="rewardId">
                 @for (r of rewards; track r.id) {
                   <mat-option [value]="r.id">{{ r.title }} (+{{ r.starsCost }} ⭐)</mat-option>
@@ -92,7 +93,7 @@ import { User } from '../../core/models/user.model';
             <div class="form-actions">
               <button mat-raised-button class="btn-green" type="submit" [disabled]="submittingAssign || assignForm.invalid">
                 @if (submittingAssign) { <mat-spinner diameter="20"></mat-spinner> }
-                @else { <mat-icon>star</mat-icon> Give Reward & Add Stars }
+                @else { <mat-icon>star</mat-icon> {{ i18n.t('rewards.giveReward') }} }
               </button>
             </div>
           </form>
@@ -107,7 +108,7 @@ import { User } from '../../core/models/user.model';
             <p class="reward-desc">{{ reward.description }}</p>
             <div class="reward-cost">
               <mat-icon>star</mat-icon>
-              <span>{{ reward.starsCost }} Stars</span>
+              <span>{{ reward.starsCost }} {{ i18n.t('common.stars') }}</span>
             </div>
           </mat-card>
         }
@@ -136,10 +137,14 @@ import { User } from '../../core/models/user.model';
       padding: 12px; width: 100px; cursor: pointer; transition: all 0.2s;
     }
     .child-select-card:hover { border-color: #b2ebf2; transform: translateY(-2px); }
-    .child-select-card.selected { border-color: #4dc9d6; background: #e0f7fa; box-shadow: 0 4px 12px rgba(77,201,214,0.2); }
+    .child-select-card.selected { border-color: var(--accent-teal); background: var(--bg-secondary); box-shadow: 0 4px 12px rgba(77,201,214,0.2); }
     .mini-avatar { width: 44px; height: 44px; border-radius: 50%; margin-bottom: 8px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .child-name { font-weight: 600; font-size: 0.85rem; color: #2d3436; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .child-stars { font-size: 0.75rem; color: #f57f17; font-weight: 600; margin-top: 4px; }
+    
+    @media(max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class RewardsComponent implements OnInit {
@@ -148,6 +153,7 @@ export class RewardsComponent implements OnInit {
   private walletSvc = inject(WalletService);
   private userSvc = inject(UserService);
   private snack = inject(MatSnackBar);
+  public i18n = inject(I18nService);
 
   rewards: Reward[] = [];
   children: User[] = [];
@@ -175,8 +181,8 @@ export class RewardsComponent implements OnInit {
     if (this.form.invalid) return;
     this.submitting = true;
     this.rewardSvc.createReward(this.form.value as any).subscribe({
-      next: () => { this.snack.open('Reward created! 🎀', 'Close', { duration: 3000 }); this.form.reset({ starsCost: 20 }); this.showForm = false; this.submitting = false; this.load(); },
-      error: (e) => { this.snack.open(e.error?.message || 'Error', 'Close', { duration: 4000 }); this.submitting = false; }
+      next: () => { this.snack.open(this.i18n.t('common.success') + ' 🎀', this.i18n.t('common.close'), { duration: 3000 }); this.form.reset({ starsCost: 20 }); this.showForm = false; this.submitting = false; this.load(); },
+      error: (e) => { this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 }); this.submitting = false; }
     });
   }
 
@@ -199,13 +205,13 @@ export class RewardsComponent implements OnInit {
 
     this.walletSvc.addStars(payload).subscribe({
       next: () => {
-        this.snack.open(`⭐ ${reward.starsCost} stars added to child for "${reward.title}"!`, 'Close', { duration: 5000 });
+        this.snack.open(`⭐ ${reward.starsCost} stars added to child for "${reward.title}"!`, this.i18n.t('common.close'), { duration: 5000 });
         this.assignForm.reset();
         this.submittingAssign = false;
         this.load(); 
       },
       error: (e) => {
-        this.snack.open(e.error?.message || 'Error adding stars', 'Close', { duration: 4000 });
+        this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 });
         this.submittingAssign = false;
       }
     });
@@ -216,6 +222,6 @@ export class RewardsComponent implements OnInit {
     if (url?.startsWith('/uploads')) {
       return `http://localhost:5000${url}`;
     }
-    return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + child.fullName;
+    return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(child.fullName);
   }
 }

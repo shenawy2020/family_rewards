@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-register',
@@ -23,49 +24,48 @@ import { AuthService } from '../../core/services/auth.service';
       <div class="auth-container animate-in">
         <div class="auth-logo">
           <span class="logo-icon float">👨‍👩‍👧‍👦</span>
-          <h1>Create Your Family</h1>
-          <p>Set up your family rewards system in seconds!</p>
+          <h1>{{ i18n.t('auth.createAccount') }}</h1>
+          <!-- Language Selection Toggle -->
+          <button mat-button (click)="toggleLang()" class="lang-toggle">
+             🌐 {{ i18n.currentLang === 'ar' ? 'English' : 'عربي' }}
+          </button>
         </div>
         <mat-card class="auth-card">
           <mat-card-content>
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
               <mat-form-field appearance="outline">
-                <mat-label>Family Name</mat-label>
+                <mat-label>{{ i18n.t('auth.familyName') }}</mat-label>
                 <mat-icon matPrefix>home</mat-icon>
-                <input matInput formControlName="familyName" placeholder="The Smith Family">
-                <mat-error>Family name is required</mat-error>
+                <input matInput formControlName="familyName">
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Your Full Name</mat-label>
+                <mat-label>{{ i18n.t('common.fullName') }}</mat-label>
                 <mat-icon matPrefix>person</mat-icon>
-                <input matInput formControlName="fullName" placeholder="John Smith">
-                <mat-error>Name is required</mat-error>
+                <input matInput formControlName="fullName">
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Email</mat-label>
+                <mat-label>{{ i18n.t('auth.email') }}</mat-label>
                 <mat-icon matPrefix>email</mat-icon>
                 <input matInput type="email" formControlName="email">
-                <mat-error>Valid email is required</mat-error>
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Password</mat-label>
+                <mat-label>{{ i18n.t('common.password') }}</mat-label>
                 <mat-icon matPrefix>lock</mat-icon>
                 <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="password">
                 <button mat-icon-button matSuffix type="button" (click)="hidePass = !hidePass">
                   <mat-icon>{{ hidePass ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
-                <mat-error>Password must be at least 6 characters</mat-error>
               </mat-form-field>
-              <button mat-raised-button class="btn-green submit-btn" type="submit" [disabled]="loading">
+              <button mat-raised-button class="btn-green submit-btn" type="submit" [disabled]="loading || form.invalid">
                 @if (loading) {
                   <mat-spinner diameter="20"></mat-spinner>
                 } @else {
-                  🏠 Create Family Account
+                  🏠 {{ i18n.t('auth.createAccount') }}
                 }
               </button>
             </form>
             <div class="auth-footer">
-              Already have an account? <a routerLink="/auth/login">Sign In</a>
+              {{ i18n.t('auth.alreadyHave') }} <a routerLink="/auth/login">{{ i18n.t('auth.login') }}</a>
             </div>
           </mat-card-content>
         </mat-card>
@@ -80,11 +80,12 @@ import { AuthService } from '../../core/services/auth.service';
     .logo-icon { font-size: 56px; display: block; margin-bottom: 8px; }
     .auth-logo h1 { font-size: 1.8rem; font-weight: 700; color: #2d3436; margin: 8px 0 4px; }
     .auth-logo p { color: #636e72; }
-    .auth-card { border: 2px solid rgba(77,201,214,0.3) !important; }
+    .auth-card { border: 2px solid rgba(77,201,214,0.3) !important; padding: 20px !important; }
+    .lang-toggle { font-family: 'Fredoka', sans-serif; }
     mat-form-field { width: 100%; margin-bottom: 4px; }
     .submit-btn { width: 100%; height: 52px; font-size: 1rem; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 16px !important; font-family: 'Fredoka', sans-serif !important; }
     .auth-footer { text-align: center; margin-top: 20px; color: #636e72; }
-    .auth-footer a { color: #4dc9d6; text-decoration: none; font-weight: 600; }
+    .auth-footer a { color: var(--accent-teal); text-decoration: none; font-weight: 600; }
   `]
 })
 export class RegisterComponent {
@@ -92,6 +93,7 @@ export class RegisterComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
+  public i18n = inject(I18nService);
 
   form = this.fb.group({
     familyName: ['', Validators.required],
@@ -103,17 +105,21 @@ export class RegisterComponent {
   hidePass = true;
 
   constructor() {}
+  
+  toggleLang() {
+     this.i18n.setLanguage(this.i18n.currentLang === 'en' ? 'ar' : 'en');
+  }
 
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
     this.auth.register(this.form.value as any).subscribe({
       next: (res) => {
-        this.snack.open(`Family created! Your Family Code is ${res.familyCode} 🎉`, 'Close', { duration: 6000 });
+        this.snack.open(`Family created! Code: ${res.familyCode} 🎉`, this.i18n.t('common.close'), { duration: 6000 });
         this.router.navigate(['/admin/dashboard']);
       },
       error: (e) => {
-        this.snack.open(e.error?.message || 'Registration failed', 'Close', { duration: 4000 });
+        this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 });
         this.loading = false;
       }
     });

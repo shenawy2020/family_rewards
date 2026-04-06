@@ -10,4 +10,5 @@ public interface IUserService
     Task ChangePasswordAsync(int userId, ChangePasswordDto dto);
     Task<IEnumerable<UserDto>> GetChildrenAsync(int familyId);
     Task<IEnumerable<UserDto>> GetLeaderboardAsync(int familyId);
+    Task UpdatePreferencesAsync(int userId, UpdatePreferencesDto dto);
 }

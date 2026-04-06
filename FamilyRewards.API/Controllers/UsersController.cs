@@ -96,4 +96,12 @@ public class UsersController : ControllerBase
 
         return Ok(updatedUser);
     }
+
+    [HttpPut("preferences")]
+    public async Task<IActionResult> UpdatePreferences([FromBody] UpdatePreferencesDto dto)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        await _userService.UpdatePreferencesAsync(userId, dto);
+        return Ok(new { message = "Preferences updated." });
+    }
 }

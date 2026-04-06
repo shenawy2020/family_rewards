@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { TaskService } from '../../core/services/task.service';
 import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-tasks',
@@ -24,43 +25,42 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
     <div class="animate-in">
       <div class="page-header">
         <div>
-          <h1 class="page-title">✅ Task Management</h1>
-          <p class="page-subtitle">Create tasks and approve completions</p>
+          <h1 class="page-title">✅ {{ i18n.t('tasks.title') }}</h1>
+          <p class="page-subtitle">{{ i18n.t('tasks.subtitle') }}</p>
         </div>
       </div>
 
       <mat-tab-group mat-stretch-tabs="false" animationDuration="300ms">
-        <!-- Create Task Tab -->
-        <mat-tab label="Create Task">
+        <mat-tab [label]="i18n.t('tasks.createTask')">
           <div class="tab-content">
             <mat-card class="add-form-card">
-              <mat-card-header><mat-card-title>📝 New Task</mat-card-title></mat-card-header>
+              <mat-card-header><mat-card-title>📝 {{ i18n.t('tasks.newTask') }}</mat-card-title></mat-card-header>
               <mat-card-content>
                 <form [formGroup]="taskForm" (ngSubmit)="createTask()" class="form-grid-3">
                   <mat-form-field appearance="outline">
-                    <mat-label>Title</mat-label>
+                    <mat-label>{{ i18n.t('tasks.taskTitle') }}</mat-label>
                     <mat-icon matPrefix>title</mat-icon>
-                    <input matInput formControlName="title" placeholder="Clean your room">
+                    <input matInput formControlName="title">
                   </mat-form-field>
                   <mat-form-field appearance="outline">
-                    <mat-label>Stars Reward</mat-label>
+                    <mat-label>{{ i18n.t('tasks.starsReward') }}</mat-label>
                     <mat-icon matPrefix>star</mat-icon>
                     <input matInput type="number" formControlName="stars" min="1" max="100">
                   </mat-form-field>
                   <mat-form-field appearance="outline">
-                    <mat-label>Type</mat-label>
+                    <mat-label>{{ i18n.t('tasks.type') }}</mat-label>
                     <mat-select formControlName="type">
-                      <mat-option [value]="1">🌅 Daily</mat-option>
-                      <mat-option [value]="2">📅 Weekly</mat-option>
-                      <mat-option [value]="3">✨ Custom</mat-option>
+                      <mat-option [value]="1">🌅 {{ i18n.t('tasks.daily') }}</mat-option>
+                      <mat-option [value]="2">📅 {{ i18n.t('tasks.weekly') }}</mat-option>
+                      <mat-option [value]="3">✨ {{ i18n.t('tasks.custom') }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                   <mat-form-field appearance="outline">
-                    <mat-label>Description</mat-label>
-                    <textarea matInput formControlName="description" rows="2" placeholder="Task details..."></textarea>
+                    <mat-label>{{ i18n.t('tasks.description') }}</mat-label>
+                    <textarea matInput formControlName="description" rows="2"></textarea>
                   </mat-form-field>
                   <div class="icon-picker full-width">
-                    <p>Select Icon:</p>
+                    <p>{{ i18n.t('tasks.selectIcon') }}:</p>
                     <div class="emoji-list">
                       <button type="button" class="emoji-btn" 
                               *ngFor="let emoji of availableIcons" 
@@ -73,19 +73,19 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
                   <div class="form-actions">
                     <button mat-raised-button class="btn-primary" type="submit" [disabled]="submitting || taskForm.invalid">
                       @if (submitting) { <mat-spinner diameter="20"></mat-spinner> }
-                      @else { <span><mat-icon>add_task</mat-icon> Create Task</span> }
+                      @else { <span><mat-icon>add_task</mat-icon> {{ i18n.t('tasks.createTask') }}</span> }
                     </button>
                   </div>
                 </form>
               </mat-card-content>
             </mat-card>
 
-            <h3 class="sub-heading">All Tasks ({{ tasks.length }})</h3>
+            <h3 class="sub-heading">{{ i18n.t('tasks.allTasks') }} ({{ tasks.length }})</h3>
             <div class="cards-grid">
               @for (task of tasks; track task.id) {
                 <mat-card class="task-card animate-in">
                   <div class="task-header">
-                    <span class="badge" [class]="'badge-' + task.type.toLowerCase()">{{ task.type }}</span>
+                    <span class="badge" [class]="'badge-' + task.type.toLowerCase()">{{ i18n.t('tasks.' + task.type.toLowerCase()) }}</span>
                     <div class="stars-display"><mat-icon>star</mat-icon> {{ task.stars }}</div>
                   </div>
                   <h3 class="task-title">
@@ -93,7 +93,6 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
                     {{ task.title }}
                   </h3>
                   <p class="task-desc">{{ task.description }}</p>
-                  <p class="task-meta">By {{ task.createdByName }}</p>
                   
                   <div class="card-actions">
                      <button mat-icon-button color="warn" (click)="deleteTask(task.id)">
@@ -106,14 +105,13 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
           </div>
         </mat-tab>
 
-        <!-- Pending Approvals Tab -->
-        <mat-tab label="Pending Approvals ({{ pending.length }})">
+        <mat-tab [label]="i18n.t('tasks.pendingApprovals') + ' (' + pending.length + ')'">
           <div class="tab-content">
             @if (pending.length === 0) {
               <div class="empty-state">
                 <mat-icon>check_circle</mat-icon>
-                <h3>All caught up!</h3>
-                <p>No pending task completions to review</p>
+                <h3>{{ i18n.t('tasks.allCaughtUp') }}</h3>
+                <p>{{ i18n.t('tasks.noPending') }}</p>
               </div>
             } @else {
               <div class="completions-list">
@@ -133,10 +131,10 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
                       <div class="stars-display"><mat-icon>star</mat-icon> {{ comp.stars }}</div>
                       <div class="comp-actions">
                         <button mat-raised-button class="btn-approve" (click)="approve(comp.id, 2)" [disabled]="processingId === comp.id">
-                          <mat-icon>check</mat-icon> Approve
+                          <mat-icon>check</mat-icon> {{ i18n.t('tasks.approve') }}
                         </button>
                         <button mat-raised-button class="btn-reject" (click)="approve(comp.id, 3)" [disabled]="processingId === comp.id">
-                          <mat-icon>close</mat-icon> Reject
+                          <mat-icon>close</mat-icon> {{ i18n.t('tasks.reject') }}
                         </button>
                       </div>
                     </div>
@@ -165,7 +163,7 @@ import { FamilyTask, TaskCompletion } from '../../core/models/task.model';
     .completions-list { display: flex; flex-direction: column; gap: 16px; }
     .completion-card { display: flex; align-items: center; justify-content: space-between; padding: 20px !important; flex-wrap: wrap; gap: 16px; }
     .comp-left { display: flex; align-items: center; gap: 16px; }
-    .comp-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #4dc9d6; background: white; }
+    .comp-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #4dc9d6; background: white; object-fit: cover; }
     .comp-task { color: #636e72; font-size: 0.9rem; margin: 2px 0; }
     .comp-meta { color: #b2bec3; font-size: 0.8rem; }
     .comp-notes { color: #f57f17; font-size: 0.85rem; margin-top: 4px; }
@@ -187,6 +185,7 @@ export class TasksComponent implements OnInit {
   private fb = inject(FormBuilder);
   private taskSvc = inject(TaskService);
   private snack = inject(MatSnackBar);
+  public i18n = inject(I18nService);
 
   tasks: FamilyTask[] = [];
   pending: TaskCompletion[] = [];
@@ -217,19 +216,19 @@ export class TasksComponent implements OnInit {
     if (this.taskForm.invalid) return;
     this.submitting = true;
     this.taskSvc.createTask(this.taskForm.value as any).subscribe({
-      next: () => { this.snack.open('Task created! ✅', 'Close', { duration: 3000 }); this.taskForm.reset({ stars: 10, type: 1, icon: '🧹' }); this.submitting = false; this.load(); },
-      error: (e) => { this.snack.open(e.error?.message || 'Error', 'Close', { duration: 4000 }); this.submitting = false; }
+      next: () => { this.snack.open(this.i18n.t('common.success') + ' ✅', this.i18n.t('common.close'), { duration: 3000 }); this.taskForm.reset({ stars: 10, type: 1, icon: '🧹' }); this.submitting = false; this.load(); },
+      error: (e) => { this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 }); this.submitting = false; }
     });
   }
 
   deleteTask(id: number) {
-    if (confirm('Are you sure you want to delete this task?')) {
+    if (confirm(this.i18n.t('tasks.deleteConfirm'))) {
       this.taskSvc.deleteTask(id).subscribe({
         next: () => {
-          this.snack.open('Task deleted.', 'Close', { duration: 3000 });
+          this.snack.open(this.i18n.t('common.success'), this.i18n.t('common.close'), { duration: 3000 });
           this.load();
         },
-        error: () => this.snack.open('Failed to delete task', 'Close', { duration: 3000 })
+        error: () => this.snack.open(this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 3000 })
       });
     }
   }
@@ -238,8 +237,7 @@ export class TasksComponent implements OnInit {
     this.processingId = id;
     this.taskSvc.approveTask({ completionId: id, status }).subscribe({
       next: () => {
-        const msg = status === 2 ? 'Task approved! ⭐ Stars awarded!' : 'Task rejected.';
-        this.snack.open(msg, 'Close', { duration: 3000 });
+        this.snack.open(this.i18n.t('common.success'), this.i18n.t('common.close'), { duration: 3000 });
         this.processingId = null; this.load();
       },
       error: () => this.processingId = null
