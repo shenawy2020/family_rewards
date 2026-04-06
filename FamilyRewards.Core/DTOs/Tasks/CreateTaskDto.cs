@@ -8,4 +8,5 @@ public class CreateTaskDto
     public string Description { get; set; } = string.Empty;
     public int Stars { get; set; }
     public TaskType Type { get; set; }
+    public string? Icon { get; set; }
 }

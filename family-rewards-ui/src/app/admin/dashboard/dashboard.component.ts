@@ -29,76 +29,78 @@ import { AuthService } from '../../core/services/auth.service';
       } @else {
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon purple"><mat-icon>group</mat-icon></div>
-            <div class="stat-info">
-              <h3>{{ children }}</h3>
-              <p>Children</p>
-            </div>
+            <div class="stat-icon purple">👨‍👩‍👧‍👦</div>
+            <div class="stat-info"><h3>{{ children }}</h3><p>Children</p></div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon blue"><mat-icon>assignment</mat-icon></div>
-            <div class="stat-info">
-              <h3>{{ tasks }}</h3>
-              <p>Active Tasks</p>
-            </div>
+            <div class="stat-icon blue">📋</div>
+            <div class="stat-info"><h3>{{ tasks }}</h3><p>Active Tasks</p></div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon gold"><mat-icon>pending_actions</mat-icon></div>
-            <div class="stat-info">
-              <h3>{{ pending }}</h3>
-              <p>Pending Approvals</p>
-            </div>
+            <div class="stat-icon gold">⏳</div>
+            <div class="stat-info"><h3>{{ pending }}</h3><p>Pending Approvals</p></div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon green"><mat-icon>card_giftcard</mat-icon></div>
-            <div class="stat-info">
-              <h3>{{ rewards }}</h3>
-              <p>Rewards Available</p>
-            </div>
+            <div class="stat-icon green">🎁</div>
+            <div class="stat-info"><h3>{{ rewards }}</h3><p>Rewards Available</p></div>
           </div>
         </div>
 
-        <h2 class="section-title">Quick Actions</h2>
+        <h2 class="section-title">⚡ Quick Actions</h2>
         <div class="actions-grid">
-          <a mat-raised-button class="action-card" routerLink="/admin/tasks">
-            <mat-icon>add_task</mat-icon>
-            <span>Create Task</span>
+          <a class="action-card" routerLink="/admin/tasks">
+            <span class="action-emoji">📝</span>
+            <span class="action-label">Create Task</span>
           </a>
-          <a mat-raised-button class="action-card approval" routerLink="/admin/tasks">
-            <mat-icon>approval</mat-icon>
-            <span>Review Completions <span class="pending-badge" *ngIf="pending > 0">{{pending}}</span></span>
+          <a class="action-card pending-card" routerLink="/admin/tasks">
+            <span class="action-emoji">✅</span>
+            <span class="action-label">Review Completions
+              @if (pending > 0) { <span class="pending-dot">{{ pending }}</span> }
+            </span>
           </a>
-          <a mat-raised-button class="action-card" routerLink="/admin/rewards">
-            <mat-icon>add_shopping_cart</mat-icon>
-            <span>Add Reward</span>
+          <a class="action-card" routerLink="/admin/rewards">
+            <span class="action-emoji">🎁</span>
+            <span class="action-label">Add Reward</span>
           </a>
-          <a mat-raised-button class="action-card danger" routerLink="/admin/penalties">
-            <mat-icon>report</mat-icon>
-            <span>Add Penalty</span>
+          <a class="action-card danger-card" routerLink="/admin/penalties">
+            <span class="action-emoji">⚠️</span>
+            <span class="action-label">Add Penalty</span>
           </a>
-          <a mat-raised-button class="action-card" routerLink="/admin/children">
-            <mat-icon>person_add</mat-icon>
-            <span>Add Child</span>
+          <a class="action-card" routerLink="/admin/children">
+            <span class="action-emoji">👶</span>
+            <span class="action-label">Add Child</span>
           </a>
-          <a mat-raised-button class="action-card gold" routerLink="/leaderboard">
-            <mat-icon>emoji_events</mat-icon>
-            <span>Leaderboard</span>
+          <a class="action-card gold-card" routerLink="/leaderboard">
+            <span class="action-emoji">🏆</span>
+            <span class="action-label">Leaderboard</span>
           </a>
         </div>
       }
     </div>
   `,
   styles: [`
-    .section-title { font-size: 1.2rem; font-weight: 700; color: #94a3b8; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
-    .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-    .action-card { display: flex !important; flex-direction: column; align-items: center; gap: 12px; padding: 24px !important; border-radius: 16px !important; background: linear-gradient(135deg, #1a1a2e, #16213e) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; height: 100px; cursor: pointer; transition: all 0.3s !important; text-decoration: none; }
-    .action-card:hover { transform: translateY(-4px); border-color: #7c3aed !important; box-shadow: 0 12px 40px rgba(124,58,237,0.3) !important; }
-    .action-card mat-icon { font-size: 32px; width: 32px; height: 32px; color: #7c3aed; }
-    .action-card.gold mat-icon { color: #ffd700; }
-    .action-card.gold:hover { border-color: #ffd700 !important; box-shadow: 0 12px 40px rgba(255,215,0,0.3) !important; }
-    .action-card.approval mat-icon { color: #f59e0b; }
-    .action-card.danger mat-icon { color: #ef4444; }
-    .pending-badge { background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px; }
+    .section-title { font-size: 1.2rem; font-weight: 700; color: #636e72; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .actions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+    .action-card {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 24px; border-radius: 20px;
+      background: white;
+      border: 2px solid rgba(0,0,0,0.06);
+      color: #2d3436; text-decoration: none;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .action-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: #4dc9d6; }
+    .action-emoji { font-size: 2.2rem; }
+    .action-label { font-weight: 600; font-size: 0.9rem; text-align: center; }
+    .gold-card { border-color: rgba(245,180,0,0.2); }
+    .gold-card:hover { border-color: #f5b400; box-shadow: 0 8px 24px rgba(245,180,0,0.15); }
+    .danger-card { border-color: rgba(239,83,80,0.15); }
+    .danger-card:hover { border-color: #ef5350; }
+    .pending-dot {
+      background: #ef5350; color: white; border-radius: 50%; width: 20px; height: 20px;
+      font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px;
+    }
   `]
 })
 export class DashboardComponent implements OnInit {

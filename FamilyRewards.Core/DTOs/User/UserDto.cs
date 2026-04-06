@@ -9,4 +9,6 @@ public class UserDto
     public string? AvatarUrl { get; set; }
     public int FamilyId { get; set; }
     public int StarBalance { get; set; }
+    public string? LoginCode { get; set; }
+    public int? ChildSequence { get; set; }
 }

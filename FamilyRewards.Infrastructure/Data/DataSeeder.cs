@@ -10,8 +10,8 @@ public static class DataSeeder
     {
         if (await context.Families.AnyAsync()) return;
 
-        // Seed Family
-        var family = new Family { Name = "The Smith Family", CreatedAt = DateTime.UtcNow };
+        // Seed Family with code
+        var family = new Family { Name = "The Smith Family", Code = "fam0000001", CreatedAt = DateTime.UtcNow };
         context.Families.Add(family);
         await context.SaveChangesAsync();
 
@@ -27,36 +27,26 @@ public static class DataSeeder
         };
         context.Users.Add(father);
 
-        // Seed Admin (Mother)
-        var mother = new User
-        {
-            FullName = "Jane Smith",
-            Email = "mother@family.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-            Role = UserRole.Admin,
-            FamilyId = family.Id,
-            AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"
-        };
-        context.Users.Add(mother);
-
-        // Seed Children
+        // Seed Children with login codes
         var child1 = new User
         {
             FullName = "Emma Smith",
-            Email = "emma@family.com",
+            Email = "fam0000001-01", // login code
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("Child@123"),
             Role = UserRole.Child,
             FamilyId = family.Id,
-            AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma"
+            ChildSequence = 1,
+            AvatarUrl = "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Emma"
         };
         var child2 = new User
         {
             FullName = "Liam Smith",
-            Email = "liam@family.com",
+            Email = "fam0000001-02", // login code
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("Child@123"),
             Role = UserRole.Child,
             FamilyId = family.Id,
-            AvatarUrl = "https://api.dicebear.com/7.x/avataaars/svg?seed=Liam"
+            ChildSequence = 2,
+            AvatarUrl = "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Liam"
         };
         context.Users.AddRange(child1, child2);
         await context.SaveChangesAsync();
@@ -72,8 +62,8 @@ public static class DataSeeder
         {
             new FamilyTask { Title = "Clean Your Room", Description = "Tidy up and vacuum your bedroom", Stars = 10, Type = TaskType.Daily, CreatedBy = father.Id, FamilyId = family.Id },
             new FamilyTask { Title = "Do Homework", Description = "Complete all homework assignments", Stars = 15, Type = TaskType.Daily, CreatedBy = father.Id, FamilyId = family.Id },
-            new FamilyTask { Title = "Help with Dishes", Description = "Wash or load the dishwasher after dinner", Stars = 8, Type = TaskType.Daily, CreatedBy = mother.Id, FamilyId = family.Id },
-            new FamilyTask { Title = "Read for 30 Minutes", Description = "Read a book or educational material", Stars = 12, Type = TaskType.Daily, CreatedBy = mother.Id, FamilyId = family.Id },
+            new FamilyTask { Title = "Help with Dishes", Description = "Wash or load the dishwasher after dinner", Stars = 8, Type = TaskType.Daily, CreatedBy = father.Id, FamilyId = family.Id },
+            new FamilyTask { Title = "Read for 30 Minutes", Description = "Read a book or educational material", Stars = 12, Type = TaskType.Daily, CreatedBy = father.Id, FamilyId = family.Id },
             new FamilyTask { Title = "Tidy the Garden", Description = "Help clean and maintain the garden", Stars = 20, Type = TaskType.Weekly, CreatedBy = father.Id, FamilyId = family.Id },
         };
         context.Tasks.AddRange(tasks);
@@ -82,16 +72,16 @@ public static class DataSeeder
         var rewards = new[]
         {
             new Reward { Title = "Extra Screen Time", Description = "1 hour of extra gaming/TV time", StarsCost = 20, CreatedBy = father.Id, FamilyId = family.Id },
-            new Reward { Title = "Pizza Night Choice", Description = "Pick the toppings for Friday pizza", StarsCost = 30, CreatedBy = mother.Id, FamilyId = family.Id },
+            new Reward { Title = "Pizza Night Choice", Description = "Pick the toppings for Friday pizza", StarsCost = 30, CreatedBy = father.Id, FamilyId = family.Id },
             new Reward { Title = "Movie Night Pick", Description = "Choose the movie for family night", StarsCost = 25, CreatedBy = father.Id, FamilyId = family.Id },
-            new Reward { Title = "New Book", Description = "Get a new book of your choice", StarsCost = 50, CreatedBy = mother.Id, FamilyId = family.Id },
+            new Reward { Title = "New Book", Description = "Get a new book of your choice", StarsCost = 50, CreatedBy = father.Id, FamilyId = family.Id },
             new Reward { Title = "Ice Cream Trip", Description = "Trip to the ice cream shop", StarsCost = 40, CreatedBy = father.Id, FamilyId = family.Id },
         };
         context.Rewards.AddRange(rewards);
 
         await context.SaveChangesAsync();
 
-        // Seed Wallet Transactions for child1
+        // Seed Wallet Transactions
         context.WalletTransactions.AddRange(
             new WalletTransaction { ChildId = child1.Id, Amount = 15, Type = TransactionType.Reward, Description = "Task completed: Do Homework", CreatedAt = DateTime.UtcNow.AddDays(-3) },
             new WalletTransaction { ChildId = child1.Id, Amount = 10, Type = TransactionType.Reward, Description = "Task completed: Clean Your Room", CreatedAt = DateTime.UtcNow.AddDays(-2) },

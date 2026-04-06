@@ -29,6 +29,18 @@ export interface Transaction {
   createdAt: string;
 }
 
+export interface AddStarsDto {
+  childId: number;
+  amount: number;
+  reason: string;
+}
+
+export interface DeliverGiftDto {
+  childId: number;
+  starsCost: number;
+  giftName: string;
+}
+
 export interface Penalty {
   id: number;
   childId: number;

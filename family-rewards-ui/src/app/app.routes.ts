@@ -17,6 +17,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./admin/dashboard/dashboard.component').then(m => m.DashboardComponent) },
       { path: 'children', loadComponent: () => import('./admin/children/children.component').then(m => m.ChildrenComponent) },
       { path: 'tasks', loadComponent: () => import('./admin/tasks/tasks.component').then(m => m.TasksComponent) },
+      { path: 'stars', loadComponent: () => import('./admin/stars/stars.component').then(m => m.StarsComponent) },
       { path: 'rewards', loadComponent: () => import('./admin/rewards/rewards.component').then(m => m.RewardsComponent) },
       { path: 'penalties', loadComponent: () => import('./admin/penalties/penalties.component').then(m => m.PenaltiesComponent) },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

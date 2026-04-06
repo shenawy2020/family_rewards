@@ -5,6 +5,7 @@ namespace FamilyRewards.Core.Interfaces;
 public interface ITaskService
 {
     Task<TaskDto> CreateTaskAsync(CreateTaskDto dto, int adminId, int familyId);
+    Task DeleteTaskAsync(int taskId, int adminId);
     Task<IEnumerable<TaskDto>> GetTasksAsync(int familyId);
     Task<TaskCompletionDto> CompleteTaskAsync(CompleteTaskDto dto, int childId);
     Task<TaskCompletionDto> ApproveTaskAsync(ApproveTaskDto dto, int adminId);

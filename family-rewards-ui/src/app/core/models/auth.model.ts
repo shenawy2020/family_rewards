@@ -5,6 +5,8 @@ export interface AuthResponse {
   role: 'Admin' | 'Child';
   userId: number;
   familyId: number;
+  familyCode: string;
+  loginCode?: string;
   avatarUrl?: string;
 }
 
@@ -16,6 +18,6 @@ export interface RegisterDto {
 }
 
 export interface LoginDto {
-  email: string;
+  loginId: string;
   password: string;
 }

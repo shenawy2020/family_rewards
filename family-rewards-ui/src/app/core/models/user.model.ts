@@ -6,11 +6,26 @@ export interface User {
   avatarUrl?: string;
   familyId: number;
   starBalance: number;
+  loginCode?: string;
+  childSequence?: number;
 }
 
 export interface AddChildDto {
   fullName: string;
-  email: string;
   password: string;
   avatarUrl?: string;
+}
+
+export interface UpdateChildDto {
+  fullName: string;
+  avatarUrl?: string;
+}
+
+export interface ResetPasswordDto {
+  newPassword: string;
+}
+
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
 }

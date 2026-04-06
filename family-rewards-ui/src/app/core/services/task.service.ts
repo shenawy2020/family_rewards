@@ -18,6 +18,10 @@ export class TaskService {
     return this.http.post<FamilyTask>(this.API, dto);
   }
 
+  deleteTask(id: number): Observable<any> {
+    return this.http.delete(`${this.API}/${id}`);
+  }
+
   getPendingCompletions(): Observable<TaskCompletion[]> {
     return this.http.get<TaskCompletion[]>(`${this.API}/pending`);
   }

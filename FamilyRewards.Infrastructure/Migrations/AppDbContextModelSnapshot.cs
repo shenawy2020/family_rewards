@@ -30,6 +30,10 @@ namespace FamilyRewards.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -63,6 +67,9 @@ namespace FamilyRewards.Infrastructure.Migrations
 
                     b.Property<int>("FamilyId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageProofUrl")
                         .HasColumnType("nvarchar(max)");
@@ -204,6 +211,9 @@ namespace FamilyRewards.Infrastructure.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ChildSequence")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -220,6 +230,12 @@ namespace FamilyRewards.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
