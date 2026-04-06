@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -303,7 +304,7 @@ export class ChildrenComponent implements OnInit {
 
   getAvatar(child: User): string {
     if (child.avatarUrl?.startsWith('/uploads')) {
-      return `http://localhost:5000${child.avatarUrl}`;
+      return `${environment.apiUrl.replace('/api', '')}${child.avatarUrl}`;
     }
     return child.avatarUrl || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(child.fullName);
   }

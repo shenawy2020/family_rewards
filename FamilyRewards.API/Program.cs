@@ -107,6 +107,7 @@ app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 // ── Database Migration & Seeding ─────────────────────────────
 using (var scope = app.Services.CreateScope())
