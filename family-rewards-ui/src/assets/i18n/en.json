@@ -149,5 +149,17 @@
     "green": "Green",
     "pink": "Pink",
     "orange": "Orange"
+  },
+  "stars": {
+    "title": "Stars & Gifts Hub",
+    "subtitle": "Add stars, deduct stars, or deliver special gifts.",
+    "manageStars": "Manage Stars",
+    "amount": "Amount (Use negative to deduct)",
+    "reason": "Reason",
+    "submitTransaction": "Submit Transaction",
+    "deliverGift": "Deliver Gift",
+    "giftName": "Gift Name",
+    "starsCost": "Stars to Deduct",
+    "deliverAndDeduct": "Deliver and Deduct Stars"
   }
 }

@@ -61,7 +61,7 @@ import { I18nService } from '../../core/services/i18n.service';
             <div class="form-actions">
               <button mat-raised-button class="btn-danger" type="submit" [disabled]="submitting || form.invalid">
                 @if (submitting) { <mat-spinner diameter="20"></mat-spinner> }
-                @else { <mat-icon>report</mat-icon> {{ i18n.t('penalties.issuePenalty') }} }
+                @else { <span><mat-icon>report</mat-icon> {{ i18n.t('penalties.issuePenalty') }}</span> }
               </button>
             </div>
           </form>

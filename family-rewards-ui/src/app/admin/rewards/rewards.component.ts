@@ -56,7 +56,7 @@ import { I18nService } from '../../core/services/i18n.service';
               <div class="form-actions">
                 <button mat-raised-button class="btn-gold" type="submit" [disabled]="submitting || form.invalid">
                   @if (submitting) { <mat-spinner diameter="20"></mat-spinner> }
-                  @else { <mat-icon>save</mat-icon> {{ i18n.t('common.save') }} }
+                  @else { <span><mat-icon>save</mat-icon> {{ i18n.t('common.save') }}</span> }
                 </button>
               </div>
             </form>
@@ -93,7 +93,7 @@ import { I18nService } from '../../core/services/i18n.service';
             <div class="form-actions">
               <button mat-raised-button class="btn-green" type="submit" [disabled]="submittingAssign || assignForm.invalid">
                 @if (submittingAssign) { <mat-spinner diameter="20"></mat-spinner> }
-                @else { <mat-icon>star</mat-icon> {{ i18n.t('rewards.giveReward') }} }
+                @else { <span><mat-icon>star</mat-icon> {{ i18n.t('rewards.giveReward') }}</span> }
               </button>
             </div>
           </form>
