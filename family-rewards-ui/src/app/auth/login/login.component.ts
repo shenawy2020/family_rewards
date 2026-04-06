@@ -34,7 +34,7 @@ type LoginTab = 'family' | 'child';
       <div class="auth-container animate-in">
         <div class="auth-logo">
           <span class="logo-star float">⭐</span>
-          <h1>Family Rewards</h1>
+          <h1>{{ i18n.t('common.appName') }}</h1>
           <!-- Add language toggle button in auth -->
           <button mat-button (click)="toggleLang()" class="lang-toggle">
              🌐 {{ i18n.currentLang === 'ar' ? 'English' : 'عربي' }}

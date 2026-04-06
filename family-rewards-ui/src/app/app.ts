@@ -22,7 +22,7 @@ import { ThemeService } from './core/services/theme.service';
       <mat-sidenav #sidenav mode="over" position="start" class="mobile-sidenav">
         <div class="sidenav-header">
           <span class="brand-star">⭐</span>
-          <span class="sidenav-brand">Family Rewards</span>
+          <span class="sidenav-brand">{{ i18n.t('common.appName') }}</span>
         </div>
         <div class="sidenav-links">
           @if (auth.isLoggedIn) {
@@ -83,7 +83,7 @@ import { ThemeService } from './core/services/theme.service';
               </button>
               <a routerLink="/" class="nav-brand">
                 <span class="brand-star">⭐</span>
-                <span class="brand-text">Family Rewards</span>
+                <span class="brand-text">{{ i18n.t('common.appName') }}</span>
               </a>
               <div class="nav-links">
                 @if (auth.isAdmin) {

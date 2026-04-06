@@ -34,7 +34,8 @@
     "selectChild": "Select Child",
     "fullName": "Full Name",
     "password": "Password",
-    "loginCode": "Login Code"
+    "loginCode": "Login Code",
+    "appName": "Family Rewards"
   },
   "adminDashboard": {
     "title": "Admin Dashboard",

@@ -34,7 +34,8 @@
     "selectChild": "اختر الطفل",
     "fullName": "الاسم الكامل",
     "password": "كلمة المرور",
-    "loginCode": "رمز الدخول"
+    "loginCode": "رمز الدخول",
+    "appName": "مكافآت العائلة"
   },
   "adminDashboard": {
     "title": "لوحة تحكم المدير",
