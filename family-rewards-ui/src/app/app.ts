@@ -81,7 +81,7 @@ import { ThemeService } from './core/services/theme.service';
               <button class="hamburger-btn" (click)="sidenav.toggle()">
                 <mat-icon>menu</mat-icon>
               </button>
-              <a routerLink="/" class="nav-brand">
+              <a [routerLink]="auth.isAdmin ? '/admin/dashboard' : (auth.isChild ? '/child/dashboard' : '/auth/login')" class="nav-brand">
                 <span class="brand-star">⭐</span>
                 <span class="brand-text">{{ i18n.t('common.appName') }}</span>
               </a>
