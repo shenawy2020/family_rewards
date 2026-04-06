@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -10,6 +10,7 @@ import { UserService } from '../../core/services/user.service';
 import { TaskService } from '../../core/services/task.service';
 import { RewardService } from '../../core/services/reward-wallet-penalty.service';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../core/services/i18n.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,8 +20,8 @@ import { AuthService } from '../../core/services/auth.service';
     <div class="animate-in">
       <div class="page-header">
         <div>
-          <h1 class="page-title">👑 Admin Dashboard</h1>
-          <p class="page-subtitle">Welcome back, {{ auth.currentUser?.fullName }}</p>
+          <h1 class="page-title">👑 {{ i18n.t('adminDashboard.title') }}</h1>
+          <p class="page-subtitle">{{ i18n.t('adminDashboard.welcome') }}, {{ auth.currentUser?.fullName }}</p>
         </div>
       </div>
 
@@ -30,49 +31,49 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon purple">👨‍👩‍👧‍👦</div>
-            <div class="stat-info"><h3>{{ children }}</h3><p>Children</p></div>
+            <div class="stat-info"><h3>{{ children }}</h3><p>{{ i18n.t('adminDashboard.children') }}</p></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon blue">📋</div>
-            <div class="stat-info"><h3>{{ tasks }}</h3><p>Active Tasks</p></div>
+            <div class="stat-info"><h3>{{ tasks }}</h3><p>{{ i18n.t('adminDashboard.activeTasks') }}</p></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon gold">⏳</div>
-            <div class="stat-info"><h3>{{ pending }}</h3><p>Pending Approvals</p></div>
+            <div class="stat-info"><h3>{{ pending }}</h3><p>{{ i18n.t('adminDashboard.pendingApprovals') }}</p></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon green">🎁</div>
-            <div class="stat-info"><h3>{{ rewards }}</h3><p>Rewards Available</p></div>
+            <div class="stat-info"><h3>{{ rewards }}</h3><p>{{ i18n.t('adminDashboard.rewardsAvailable') }}</p></div>
           </div>
         </div>
 
-        <h2 class="section-title">⚡ Quick Actions</h2>
+        <h2 class="section-title">⚡ {{ i18n.t('adminDashboard.quickActions') }}</h2>
         <div class="actions-grid">
           <a class="action-card" routerLink="/admin/tasks">
             <span class="action-emoji">📝</span>
-            <span class="action-label">Create Task</span>
+            <span class="action-label">{{ i18n.t('adminDashboard.createTask') }}</span>
           </a>
           <a class="action-card pending-card" routerLink="/admin/tasks">
             <span class="action-emoji">✅</span>
-            <span class="action-label">Review Completions
+            <span class="action-label">{{ i18n.t('adminDashboard.reviewCompletions') }}
               @if (pending > 0) { <span class="pending-dot">{{ pending }}</span> }
             </span>
           </a>
           <a class="action-card" routerLink="/admin/rewards">
             <span class="action-emoji">🎁</span>
-            <span class="action-label">Add Reward</span>
+            <span class="action-label">{{ i18n.t('adminDashboard.addReward') }}</span>
           </a>
           <a class="action-card danger-card" routerLink="/admin/penalties">
             <span class="action-emoji">⚠️</span>
-            <span class="action-label">Add Penalty</span>
+            <span class="action-label">{{ i18n.t('adminDashboard.addPenalty') }}</span>
           </a>
           <a class="action-card" routerLink="/admin/children">
             <span class="action-emoji">👶</span>
-            <span class="action-label">Add Child</span>
+            <span class="action-label">{{ i18n.t('adminDashboard.addChild') }}</span>
           </a>
           <a class="action-card gold-card" routerLink="/leaderboard">
             <span class="action-emoji">🏆</span>
-            <span class="action-label">Leaderboard</span>
+            <span class="action-label">{{ i18n.t('adminDashboard.leaderboard') }}</span>
           </a>
         </div>
       }
@@ -90,7 +91,7 @@ import { AuthService } from '../../core/services/auth.service';
       cursor: pointer; transition: all 0.3s;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .action-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: #4dc9d6; }
+    .action-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--accent-teal); }
     .action-emoji { font-size: 2.2rem; }
     .action-label { font-weight: 600; font-size: 0.9rem; text-align: center; }
     .gold-card { border-color: rgba(245,180,0,0.2); }
@@ -101,11 +102,14 @@ import { AuthService } from '../../core/services/auth.service';
       background: #ef5350; color: white; border-radius: 50%; width: 20px; height: 20px;
       font-size: 0.7rem; display: inline-flex; align-items: center; justify-content: center; margin-left: 6px;
     }
+    
+    [dir="rtl"] .pending-dot { margin-left: 0; margin-right: 6px; }
   `]
 })
 export class DashboardComponent implements OnInit {
   children = 0; tasks = 0; pending = 0; rewards = 0;
   loading = true;
+  public i18n = inject(I18nService);
 
   constructor(public auth: AuthService, private userSvc: UserService,
     private taskSvc: TaskService, private rewardSvc: RewardService) {}

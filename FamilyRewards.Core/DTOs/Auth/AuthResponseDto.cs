@@ -11,4 +11,6 @@ public class AuthResponseDto
     public string FamilyCode { get; set; } = string.Empty;
     public string? LoginCode { get; set; }
     public string? AvatarUrl { get; set; }
+    public string ThemeColor { get; set; } = "teal";
+    public string Language { get; set; } = "en";
 }

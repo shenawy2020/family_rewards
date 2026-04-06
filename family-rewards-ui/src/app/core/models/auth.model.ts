@@ -8,6 +8,8 @@ export interface AuthResponse {
   familyCode: string;
   loginCode?: string;
   avatarUrl?: string;
+  themeColor?: string;
+  language?: string;
 }
 
 export interface RegisterDto {

@@ -59,7 +59,9 @@ public class AuthService : IAuthService
             UserId = user.Id,
             FamilyId = user.FamilyId,
             FamilyCode = familyCode,
-            AvatarUrl = user.AvatarUrl
+            AvatarUrl = user.AvatarUrl,
+            ThemeColor = user.ThemeColor,
+            Language = user.Language
         };
     }
 
@@ -83,7 +85,9 @@ public class AuthService : IAuthService
             FamilyId = user.FamilyId,
             FamilyCode = family?.Code ?? "",
             LoginCode = user.Role == UserRole.Child ? user.Email : null,
-            AvatarUrl = user.AvatarUrl
+            AvatarUrl = user.AvatarUrl,
+            ThemeColor = user.ThemeColor,
+            Language = user.Language
         };
     }
 

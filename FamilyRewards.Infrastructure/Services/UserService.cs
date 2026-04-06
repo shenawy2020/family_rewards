@@ -139,4 +139,18 @@ public class UserService : IUserService
         LoginCode = u.ChildSequence != null ? u.Email : null,
         ChildSequence = u.ChildSequence
     };
+
+    public async Task UpdatePreferencesAsync(int userId, UpdatePreferencesDto dto)
+    {
+        var user = await _uow.Users.GetByIdAsync(userId)
+            ?? throw new KeyNotFoundException("User not found.");
+
+        if (!string.IsNullOrWhiteSpace(dto.ThemeColor))
+            user.ThemeColor = dto.ThemeColor;
+        if (!string.IsNullOrWhiteSpace(dto.Language))
+            user.Language = dto.Language;
+
+        _uow.Users.Update(user);
+        await _uow.SaveChangesAsync();
+    }
 }

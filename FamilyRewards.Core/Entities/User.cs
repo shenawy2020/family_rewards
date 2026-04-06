@@ -14,6 +14,8 @@ public class User
     public int? ChildSequence { get; set; } // sequence within family for children
     public string? ResetToken { get; set; }
     public DateTime? ResetTokenExpiry { get; set; }
+    public string ThemeColor { get; set; } = "teal"; // teal, purple, blue, green, pink, orange
+    public string Language { get; set; } = "en"; // en, ar
 
     public Family Family { get; set; } = null!;
     public Wallet? Wallet { get; set; }

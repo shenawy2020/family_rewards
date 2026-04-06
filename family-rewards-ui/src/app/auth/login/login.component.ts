@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../core/services/i18n.service';
 
 type ViewMode = 'login' | 'forgot-password' | 'reset-password';
 type LoginTab = 'family' | 'child';
@@ -33,19 +34,22 @@ type LoginTab = 'family' | 'child';
       <div class="auth-container animate-in">
         <div class="auth-logo">
           <span class="logo-star float">⭐</span>
-          <h1>Family Rewards</h1>
-          <p>Sign in to manage your family's rewards</p>
+          <h1>{{ i18n.t('common.appName') }}</h1>
+          <!-- Add language toggle button in auth -->
+          <button mat-button (click)="toggleLang()" class="lang-toggle">
+             🌐 {{ i18n.currentLang === 'ar' ? 'English' : 'عربي' }}
+          </button>
         </div>
 
         <mat-card class="auth-card">
-          <!-- TABS (Only show when in login view) -->
+          <!-- TABS -->
           @if (viewMode === 'login') {
             <div class="tabs">
               <button class="tab-btn" [class.active]="activeTab === 'family'" (click)="activeTab = 'family'">
-                👨‍👩‍👧‍👦 Family / Admin
+                👨‍👩‍👧‍👦 {{ i18n.t('auth.familyLogin') }}
               </button>
               <button class="tab-btn" [class.active]="activeTab === 'child'" (click)="activeTab = 'child'">
-                👧 Child
+                👧 {{ i18n.t('auth.childLogin') }}
               </button>
             </div>
           }
@@ -57,20 +61,20 @@ type LoginTab = 'family' | 'child';
                 
                 @if (activeTab === 'family') {
                   <mat-form-field appearance="outline">
-                    <mat-label>Email</mat-label>
+                    <mat-label>{{ i18n.t('auth.email') }}</mat-label>
                     <mat-icon matPrefix>email</mat-icon>
-                    <input matInput type="email" formControlName="loginId" placeholder="father@family.com">
+                    <input matInput type="email" formControlName="loginId">
                   </mat-form-field>
                 } @else {
                   <mat-form-field appearance="outline">
-                    <mat-label>Login Code</mat-label>
+                    <mat-label>{{ i18n.t('auth.loginId') }}</mat-label>
                     <mat-icon matPrefix>person</mat-icon>
-                    <input matInput type="text" formControlName="loginId" placeholder="fam0000001-01">
+                    <input matInput type="text" formControlName="loginId">
                   </mat-form-field>
                 }
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Password</mat-label>
+                  <mat-label>{{ i18n.t('common.password') }}</mat-label>
                   <mat-icon matPrefix>lock</mat-icon>
                   <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="password">
                   <button mat-icon-button matSuffix type="button" (click)="hidePass = !hidePass">
@@ -80,13 +84,13 @@ type LoginTab = 'family' | 'child';
 
                 @if (activeTab === 'family') {
                   <div class="forgot-link">
-                    <a href="javascript:void(0)" (click)="setViewMode('forgot-password')">Forgot Password?</a>
+                    <a href="javascript:void(0)" (click)="setViewMode('forgot-password')">{{ i18n.t('auth.forgotPassword') }}</a>
                   </div>
                 }
 
                 <button mat-raised-button class="btn-green submit-btn" type="submit" [disabled]="loading || !form.value.loginId || !form.value.password">
                   @if (loading) { <mat-spinner diameter="20"></mat-spinner> } 
-                  @else { 🚀 Sign In }
+                  @else { 🚀 {{ i18n.t('auth.login') }} }
                 </button>
               </form>
             }
@@ -94,14 +98,14 @@ type LoginTab = 'family' | 'child';
             <!-- FORGOT PASSWORD VIEW -->
             @if (viewMode === 'forgot-password') {
               <div class="view-header">
-                <h3>Reset Password</h3>
+                <h3>{{ i18n.t('auth.resetPassword') }}</h3>
                 <p>Enter your family admin email to receive a reset link.</p>
               </div>
               <form [formGroup]="forgotForm" (ngSubmit)="onForgotSubmit()">
                 <mat-form-field appearance="outline">
-                  <mat-label>Email</mat-label>
+                  <mat-label>{{ i18n.t('auth.email') }}</mat-label>
                   <mat-icon matPrefix>email</mat-icon>
-                  <input matInput type="email" formControlName="email" placeholder="father@family.com">
+                  <input matInput type="email" formControlName="email">
                 </mat-form-field>
                 <button mat-raised-button class="btn-primary submit-btn" type="submit" [disabled]="loading || !forgotForm.value.email">
                   @if (loading) { <mat-spinner diameter="20"></mat-spinner> }
@@ -119,14 +123,14 @@ type LoginTab = 'family' | 'child';
               </div>
               <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
                 <mat-form-field appearance="outline">
-                  <mat-label>Email</mat-label>
+                  <mat-label>{{ i18n.t('auth.email') }}</mat-label>
                   <mat-icon matPrefix>email</mat-icon>
-                  <input matInput type="email" formControlName="email" placeholder="father@family.com">
+                  <input matInput type="email" formControlName="email">
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>Reset Token</mat-label>
                   <mat-icon matPrefix>key</mat-icon>
-                  <input matInput type="text" formControlName="token" placeholder="Paste token here">
+                  <input matInput type="text" formControlName="token">
                 </mat-form-field>
                 <mat-form-field appearance="outline">
                   <mat-label>New Password</mat-label>
@@ -145,7 +149,7 @@ type LoginTab = 'family' | 'child';
             }
 
             <div class="auth-footer" *ngIf="viewMode === 'login'">
-              Don't have an account? <a routerLink="/auth/register">Create Family</a>
+              {{ i18n.t('auth.dontHave') }} <a routerLink="/auth/register">{{ i18n.t('auth.createAccount') }}</a>
             </div>
           </mat-card-content>
         </mat-card>
@@ -170,19 +174,20 @@ type LoginTab = 'family' | 'child';
     .auth-logo { text-align: center; margin-bottom: 28px; }
     .logo-star { font-size: 56px; display: block; margin-bottom: 8px; }
     .auth-logo h1 { font-size: 2rem; font-weight: 700; color: #2d3436; margin: 8px 0 4px; }
-    .auth-logo p { color: #636e72; font-size: 0.95rem; }
+    .lang-toggle { margin-top: 8px; font-family: 'Fredoka', sans-serif; }
     
     .auth-card { padding: 0 !important; border: 2px solid rgba(77,201,214,0.3) !important; overflow: hidden; border-radius: 20px !important; }
     .tabs { display: flex; border-bottom: 2px solid #edf2f7; background: #fafbfc; }
     .tab-btn { flex: 1; padding: 16px; border: none; background: transparent; font-family: 'Fredoka', sans-serif; font-size: 1.05rem; font-weight: 600; color: #a0aec0; cursor: pointer; transition: 0.3s; }
-    .tab-btn.active { color: #4dc9d6; background: white; border-bottom: 3px solid #4dc9d6; }
+    .tab-btn.active { color: var(--accent-teal); background: white; border-bottom: 3px solid var(--accent-teal); }
     .tab-btn:hover:not(.active) { color: #718096; background: #f7fafc; }
     
     mat-card-content { padding: 24px !important; }
     mat-form-field { width: 100%; margin-bottom: -4px; }
     
     .forgot-link { text-align: right; margin-bottom: 12px; margin-top: -8px; }
-    .forgot-link a { color: #4dc9d6; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+    [dir="rtl"] .forgot-link { text-align: left; }
+    .forgot-link a { color: var(--accent-teal); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
     .forgot-link a:hover { text-decoration: underline; }
     
     .view-header { text-align: center; margin-bottom: 20px; }
@@ -198,12 +203,12 @@ type LoginTab = 'family' | 'child';
     .mt-2 { margin-top: 12px; }
     
     .auth-footer { text-align: center; margin-top: 20px; color: #636e72; font-size: 0.9rem; }
-    .auth-footer a { color: #4dc9d6; text-decoration: none; font-weight: 600; }
+    .auth-footer a { color: var(--accent-teal); text-decoration: none; font-weight: 600; }
     
     .demo-accounts { margin-top: 20px; text-align: center; }
     .demo-accounts p { color: #636e72; font-size: 0.85rem; margin-bottom: 10px; font-weight: 500; }
     .demo-btn { margin: 0 4px; padding: 8px 16px; border: 2px solid rgba(77,201,214,0.3); background: white; border-radius: 12px; cursor: pointer; font-family: 'Fredoka', sans-serif; font-size: 0.85rem; color: #2d3436; transition: all 0.2s; }
-    .demo-btn:hover { border-color: #4dc9d6; background: #e0f7fa; transform: translateY(-2px); }
+    .demo-btn:hover { border-color: var(--accent-teal); background: #e0f7fa; transform: translateY(-2px); }
   `]
 })
 export class LoginComponent {
@@ -211,24 +216,22 @@ export class LoginComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
+  public i18n = inject(I18nService);
 
   viewMode: ViewMode = 'login';
   activeTab: LoginTab = 'family';
   loading = false;
   hidePass = true;
 
-  // Login form
   form = this.fb.group({
     loginId: [''],
     password: ['']
   });
 
-  // Forgot Password form
   forgotForm = this.fb.group({
     email: ['']
   });
 
-  // Reset Password form
   resetForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     token: ['', Validators.required],
@@ -244,7 +247,9 @@ export class LoginComponent {
     emoji: this.emojis[Math.floor(Math.random() * this.emojis.length)]
   }));
 
-  constructor() {}
+  toggleLang() {
+    this.i18n.setLanguage(this.i18n.currentLang === 'en' ? 'ar' : 'en');
+  }
 
   setViewMode(mode: ViewMode) {
     this.viewMode = mode;
@@ -263,11 +268,11 @@ export class LoginComponent {
     this.loading = true;
     this.auth.login(this.form.value as any).subscribe({
       next: (res) => {
-        this.snack.open(`Welcome back, ${res.fullName}! 🌟`, 'Close', { duration: 3000 });
+        this.snack.open(`${this.i18n.t('adminDashboard.welcome')}, ${res.fullName}! 🌟`, this.i18n.t('common.close'), { duration: 3000 });
         this.router.navigate([res.role === 'Admin' ? '/admin/dashboard' : '/child/dashboard']);
       },
       error: (e) => {
-        this.snack.open(e.error?.message || 'Login failed', 'Close', { duration: 4000 });
+        this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 });
         this.loading = false;
       }
     });
@@ -278,14 +283,13 @@ export class LoginComponent {
     this.loading = true;
     this.auth.forgotPassword(this.forgotForm.value.email).subscribe({
       next: (res) => {
-        this.snack.open(res.message, 'Close', { duration: 5000 });
+        this.snack.open(res.message, this.i18n.t('common.close'), { duration: 5000 });
         this.loading = false;
-        // Pre-fill email for reset stage to improve UX
         this.resetForm.patchValue({ email: this.forgotForm.value.email });
         this.setViewMode('reset-password');
       },
       error: (e) => {
-        this.snack.open(e.error?.message || 'Failed to request reset', 'Close', { duration: 4000 });
+        this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 });
         this.loading = false;
       }
     });
@@ -297,12 +301,12 @@ export class LoginComponent {
     const { email, token, newPassword } = this.resetForm.value;
     this.auth.resetPassword(email!, token!, newPassword!).subscribe({
       next: (res) => {
-        this.snack.open(res.message, 'Close', { duration: 5000 });
+        this.snack.open(res.message, this.i18n.t('common.close'), { duration: 5000 });
         this.setViewMode('login');
         this.loading = false;
       },
       error: (e) => {
-        this.snack.open(e.error?.message || 'Failed to reset password', 'Close', { duration: 4000 });
+        this.snack.open(e.error?.message || this.i18n.t('common.error'), this.i18n.t('common.close'), { duration: 4000 });
         this.loading = false;
       }
     });
