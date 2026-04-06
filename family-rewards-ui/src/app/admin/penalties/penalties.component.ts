@@ -143,7 +143,9 @@ export class PenaltiesComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.userSvc.getChildren().subscribe(c => this.children = c);
+    this.userSvc.getChildren().subscribe(c => {
+      this.children = c.filter(x => x.role !== 'Admin');
+    });
     this.form.get('childId')?.valueChanges.subscribe(id => {
       if (id) {
         this.selectedChild = this.children.find(c => c.id === id) || null;

@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService } from '../../core/services/user.service';
@@ -19,7 +18,7 @@ import { I18nService } from '../../core/services/i18n.service';
   selector: 'app-stars-management',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatButtonModule,
-    MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatIconModule, MatFormFieldModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule],
   template: `
     <div class="animate-in">
@@ -40,14 +39,20 @@ import { I18nService } from '../../core/services/i18n.service';
           <mat-card-content>
             <form [formGroup]="starsForm" (ngSubmit)="manageStars()" class="form-grid">
               
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{ i18n.t('common.selectChild') }}</mat-label>
-                <mat-select formControlName="childId">
+              <div class="child-cards-selector full-width">
+                <p>{{ i18n.t('common.selectChild') }}:</p>
+                <div class="child-cards-grid">
                   @for (c of children; track c.id) {
-                    <mat-option [value]="c.id">{{ c.fullName }} ({{ c.starBalance }} ⭐)</mat-option>
+                    <div class="child-select-card" 
+                         [class.selected]="starsForm.get('childId')?.value === c.id"
+                         (click)="starsForm.patchValue({childId: c.id})">
+                      <img [src]="getAvatar(c)" [alt]="c.fullName" class="mini-avatar">
+                      <div class="child-name">{{ c.fullName }}</div>
+                      <div class="child-stars">{{ c.starBalance }} ⭐</div>
+                    </div>
                   }
-                </mat-select>
-              </mat-form-field>
+                </div>
+              </div>
 
               <div class="quick-stars full-width" *ngIf="starsForm.get('childId')?.value">
                 <button type="button" mat-raised-button color="primary" (click)="setAmount(1)">+1 ⭐</button>
@@ -86,14 +91,20 @@ import { I18nService } from '../../core/services/i18n.service';
           <mat-card-content>
             <form [formGroup]="giftForm" (ngSubmit)="deliverGift()" class="form-grid">
               
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>{{ i18n.t('common.selectChild') }}</mat-label>
-                <mat-select formControlName="childId">
+              <div class="child-cards-selector full-width">
+                <p>{{ i18n.t('common.selectChild') }}:</p>
+                <div class="child-cards-grid">
                   @for (c of children; track c.id) {
-                    <mat-option [value]="c.id">{{ c.fullName }} ({{ c.starBalance }} ⭐)</mat-option>
+                    <div class="child-select-card gift-select-card" 
+                         [class.selected]="giftForm.get('childId')?.value === c.id"
+                         (click)="giftForm.patchValue({childId: c.id})">
+                      <img [src]="getAvatar(c)" [alt]="c.fullName" class="mini-avatar">
+                      <div class="child-name">{{ c.fullName }}</div>
+                      <div class="child-stars">{{ c.starBalance }} ⭐</div>
+                    </div>
                   }
-                </mat-select>
-              </mat-form-field>
+                </div>
+              </div>
 
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>{{ i18n.t('stars.giftName') }}</mat-label>
@@ -134,6 +145,24 @@ import { I18nService } from '../../core/services/i18n.service';
     .quick-stars { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
     .quick-stars button { border-radius: 20px; }
     
+    .child-cards-selector { margin-bottom: 8px; }
+    .child-cards-selector p { font-weight: 600; color: #636e72; margin: 0 0 12px; }
+    .child-cards-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    .child-select-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: white; border: 2px solid #edf2f7; border-radius: 16px;
+      padding: 12px; width: 85px; cursor: pointer; transition: all 0.2s;
+    }
+    .child-select-card:hover { border-color: #b2ebf2; transform: translateY(-2px); }
+    .child-select-card.selected { border-color: var(--accent-teal); background: var(--bg-secondary); box-shadow: 0 4px 12px rgba(77,201,214,0.2); }
+    
+    .gift-select-card:hover { border-color: #a5d6a7; }
+    .gift-select-card.selected { border-color: #4caf50; background: #e8f5e9; box-shadow: 0 4px 12px rgba(76,175,80,0.2); }
+    
+    .mini-avatar { width: 40px; height: 40px; border-radius: 50%; margin-bottom: 8px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .child-name { font-weight: 600; font-size: 0.8rem; color: #2d3436; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .child-stars { font-size: 0.75rem; color: #f57f17; font-weight: 600; margin-top: 4px; }
+    
     @media(max-width: 768px) {
       .half-width { width: 100%; }
     }
@@ -165,7 +194,9 @@ export class StarsComponent implements OnInit {
   ngOnInit() { this.loadChildren(); }
 
   loadChildren() {
-    this.userSvc.getChildren().subscribe(c => this.children = c);
+    this.userSvc.getChildren().subscribe(c => {
+      this.children = c.filter(x => x.role !== 'Admin');
+    });
   }
 
   setAmount(amt: number) {
@@ -208,5 +239,12 @@ export class StarsComponent implements OnInit {
         this.submittingGift = false;
       }
     });
+  }
+  getAvatar(child: User): string {
+    const url = child.avatarUrl;
+    if (url?.startsWith('/uploads')) {
+      return `http://localhost:5000${url}`;
+    }
+    return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(child.fullName);
   }
 }

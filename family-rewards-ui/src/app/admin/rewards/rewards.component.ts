@@ -175,7 +175,9 @@ export class RewardsComponent implements OnInit {
   ngOnInit() { this.load(); }
   load() { 
     this.rewardSvc.getRewards().subscribe(r => this.rewards = r); 
-    this.userSvc.getChildren().subscribe(c => this.children = c);
+    this.userSvc.getChildren().subscribe(c => {
+      this.children = c.filter(x => x.role !== 'Admin');
+    });
   }
   createReward() {
     if (this.form.invalid) return;
