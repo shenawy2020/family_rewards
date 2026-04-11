@@ -1,3 +1,4 @@
+import { environment } from '../environments/environment';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -382,7 +383,7 @@ export class AppComponent implements OnInit {
     const newLang = this.i18n.currentLang === 'en' ? 'ar' : 'en';
     this.i18n.setLanguage(newLang);
     // Save to server
-    const apiUrl = 'http://localhost:5000/api/users/preferences';
+    const apiUrl = `\${environment.apiUrl.replace('/api', '')}/api/users/preferences`;
     // We'll use the user service's http client through the auth service approach
   }
 
@@ -395,7 +396,7 @@ export class AppComponent implements OnInit {
   getNavAvatar(): string {
     const url = this.auth.currentUser?.avatarUrl;
     if (url?.startsWith('/uploads')) {
-      return `http://localhost:5000${url}`;
+      return `${environment.apiUrl.replace('/api', '')}${url}`;
     }
     return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(this.auth.currentUser?.fullName || '');
   }

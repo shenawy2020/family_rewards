@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -275,7 +276,7 @@ export class ChildDashboardComponent implements OnInit {
   getAvatar(): string {
     const url = this.profileImageUrl || this.auth.currentUser?.avatarUrl;
     if (url?.startsWith('/uploads')) {
-      return `http://localhost:5000${url}`;
+      return `${environment.apiUrl.replace('/api', '')}${url}`;
     }
     return url || 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' + encodeURIComponent(this.auth.currentUser?.fullName || '');
   }
