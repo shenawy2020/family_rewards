@@ -237,6 +237,7 @@ _pkginfo.txt
 
 # Others
 wwwroot/
+*.zip
 ClientBin/
 familyrewards.api/wwwroot/
 ~$*
